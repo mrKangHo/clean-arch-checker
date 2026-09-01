@@ -1,7 +1,7 @@
 {
   "name": "clean-arch-checker",
-  "version": "1.0.0",
-  "description": "Universal AI Agent skill installer for Clean Architecture Checker (iOS, Android, Flutter)",
+  "version": "1.1.0",
+  "description": "Universal AI Agent skill installer for Clean Architecture Checker (iOS, Android, Flutter, React Native, TypeScript)",
   "main": "bin/install.js",
   "bin": {
     "clean-arch-checker": "bin/install.js"
@@ -21,9 +21,13 @@
     "ios",
     "android",
     "flutter",
+    "react-native",
+    "typescript",
     "cursor",
     "antigravity",
-    "claude-code"
+    "claude-code",
+    "codex",
+    "opencode"
   ],
   "license": "MIT"
 }

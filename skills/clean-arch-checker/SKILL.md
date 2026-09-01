@@ -2,13 +2,13 @@
 name: clean-arch-checker
 description: >-
   Use this skill when auditing, inspecting, or refactoring iOS (Swift), Android (Kotlin),
-  or Flutter (Dart) projects to check compliance with Clean Architecture principles,
-  dependency rules (Domain <- Data / Presentation), layer boundaries, and interface abstractions.
+  Flutter (Dart), or React Native (TypeScript/JavaScript) projects to check compliance with
+  Clean Architecture principles, dependency rules (Domain <- Data / Presentation), layer boundaries, and interface abstractions.
 ---
 
 # Clean Architecture Checker Skill
 
-이 스킬은 iOS(Swift), Android(Kotlin), Flutter(Dart) 프로젝트에서 **클린 아키텍처(Clean Architecture)** 및 **의존성 역전 원칙(DIP)**이 올바르게 준수되고 있는지 체계적으로 점검하고 리팩토링 방안을 제안합니다.
+이 스킬은 iOS(Swift), Android(Kotlin), Flutter(Dart), React Native(TypeScript/JavaScript) 프로젝트에서 **클린 아키텍처(Clean Architecture)** 및 **의존성 역전 원칙(DIP)**이 올바르게 준수되고 있는지 체계적으로 점검하고 리팩토링 방안을 제안합니다.
 
 ---
 
@@ -35,6 +35,7 @@ description: >-
 * **iOS**: `.xcodeproj`, `Package.swift`, `Podfile` 확인 (VIPER, Clean Swift, MVVM-C 계층 구조)
 * **Android**: `build.gradle`, `build.gradle.kts` 확인 (멀티 모듈 구조 `:core:domain`, `:core:data` 또는 패키지 구조 `domain/`, `data/`, `presentation/`)
 * **Flutter**: `pubspec.yaml` 확인 (`lib/features/.../domain`, `data`, `presentation` 또는 `lib/domain`, `data`, `presentation`)
+* **React Native**: `package.json`, `tsconfig.json` 확인 (`src/domain`, `src/data`, `src/presentation` 또는 `src/features/.../domain`, `data`, `presentation`)
 
 ### 2단계: 레이어별 의존성 검사 (Import Checking)
 
@@ -44,20 +45,20 @@ description: >-
 
 | 레이어 | 금지된 임포트/의존성 | 이유 |
 | :--- | :--- | :--- |
-| **Domain** | **iOS**: `UIKit`, `SwiftUI`, `CoreData`, `Alamofire`, `Moya`, `Data` 패키지/폴더<br>**Android**: `android.*`, `androidx.*` (일부 pure annotations 제외), `retrofit2.*`, `androidx.room.*`, `Data` 패키지<br>**Flutter**: `package:flutter/material.dart`, `package:flutter/widgets.dart`, `package:dio`, `package:hive`, `package:isar`, `data/` 폴더 | Domain은 순수 언어(Swift, Kotlin, Dart)로만 작성되어야 함 |
+| **Domain** | **iOS**: `UIKit`, `SwiftUI`, `CoreData`, `Alamofire`, `Moya`<br>**Android**: `android.*`, `androidx.*`, `retrofit2.*`, `androidx.room.*`<br>**Flutter**: `package:flutter/material.dart`, `package:dio`, `package:hive`, `package:isar`<br>**React Native**: `react`, `react-native`, `@react-navigation/*`, `axios`, `@react-native-async-storage/*`, `react-native-mmkv`, `data/`, `presentation/` | Domain은 순수 언어(Swift, Kotlin, Dart, Pure TypeScript)로만 작성되어야 함 |
 | **Presentation** | `Data` 레이어 직참조 (예: `UserRepositoryImpl`, `UserDto`, `UserLocalDataSource`) | Presentation은 Domain의 `UseCase` 또는 `Repository Protocol/Interface`만 바라봐야 함 |
-| **Data** | `Presentation` 레이어 참조 (`ViewModel`, `Widget`, `Activity` 등) | 역방향 의존성 위반 |
+| **Data** | `Presentation` 레이어 참조 (`ViewModel`, `Widget`, `Activity`, `React Component` 등) | 역방향 의존성 위반 |
 
 ### 3단계: 추상화 및 데이터 흐름 검사
 
 1. **Repository 인터페이스 위치**:
-   - `Repository` 인터페이스(Protocol/Abstract Class)가 **Domain** 레이어에 정의되어 있는가?
+   - `Repository` 인터페이스(Protocol/Abstract Class/TypeScript Interface)가 **Domain** 레이어에 정의되어 있는가?
    - `RepositoryImpl` 구현체가 **Data** 레이어에 위치하는가?
 2. **모델 분리 (Entity vs DTO vs UI Model)**:
-   - Domain의 `Entity`에 JSON 직렬화 관련 코드(`Codable`, `@Serializable`, `fromJson`/`toJson`)나 DB 어노테이션(`@Entity`, `@PrimaryKey`)이 섞여있지 않은가?
+   - Domain의 `Entity`에 JSON 직렬화 관련 코드나 DB 어노테이션이 섞여있지 않은가?
    - Data 레이어에서 Domain Entity로 변환하는 **Mapper**가 올바르게 존재 하는가?
 3. **Presentation <-> Domain 결합도**:
-   - `ViewModel` / `BLoC`이 Data 레이어의 DTO를 직접 반환받거나 파라미터로 사용하지 않는가?
+   - `ViewModel` / `Custom Hook`이 Data 레이어의 DTO를 직접 반환받거나 파라미터로 사용하지 않는가?
 
 ---
 
@@ -68,6 +69,7 @@ description: >-
 * [iOS 클린 아키텍처 점검 가이드](./references/ios_clean_arch.md)
 * [Android 클린 아키텍처 점검 가이드](./references/android_clean_arch.md)
 * [Flutter 클린 아키텍처 점검 가이드](./references/flutter_clean_arch.md)
+* [React Native & TypeScript 클린 아키텍처 점검 가이드](./references/react_native_clean_arch.md)
 
 ---
 

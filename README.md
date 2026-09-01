@@ -7,13 +7,13 @@
 <a name="-한국어-가이드"></a>
 ## 🇰🇷 한국어 가이드
 
-**`clean-arch-checker`**는 다양한 AI 에이전트(Claude Code, Antigravity, Cursor, Codex, OpenCode, Windsurf 등)에서 iOS(Swift), Android(Kotlin), Flutter(Dart) 프로젝트의 **클린 아키텍처(Clean Architecture)** 및 **의존성 역전 원칙(DIP)** 준수 여부를 자동으로 점검하고, 리팩토링 방안을 제시하는 AI Agent 전용 스킬 패키지입니다.
+**`clean-arch-checker`**는 다양한 AI 에이전트(Claude Code, Antigravity, Cursor, Codex, OpenCode, Windsurf 등)에서 iOS(Swift), Android(Kotlin), Flutter(Dart), React Native(TypeScript/JS) 프로젝트의 **클린 아키텍처(Clean Architecture)** 및 **의존성 역전 원칙(DIP)** 준수 여부를 자동으로 점검하고, 리팩토링 방안을 제시하는 AI Agent 전용 스킬 패키지입니다.
 
 ### 🌟 주요 특징
 * **모든 주요 AI Coding Agent 지원**: Claude Code, Antigravity, Cursor, Codex, OpenCode 등 다양한 AI 코딩 에이전트와 완벽 호환
 * **대화형 설치 메뉴 지원**: `npx` 설치 단계에서 글로벌/워크스페이스 범위 및 사용할 AI 에이전트(전체/개별) 선택 메뉴 제공
-* **자동 플랫폼 식별**: iOS (`.xcodeproj`, `Package.swift`), Android (`build.gradle`), Flutter (`pubspec.yaml`) 자동 인식
-* **레이어 오염 검사**: `Domain` 레이어 내 UI 프레임워크(UIKit, SwiftUI, Composable, Material), DB(CoreData, Room, Hive, Isar), 네트워크 라이브러리(Alamofire, Retrofit, Dio) 임포트 및 참조 오염 탐색
+* **자동 플랫폼 식별**: iOS (`.xcodeproj`, `Package.swift`), Android (`build.gradle`), Flutter (`pubspec.yaml`), React Native (`package.json`, `tsconfig.json`) 자동 인식
+* **레이어 오염 검사**: `Domain` 레이어 내 UI 프레임워크(UIKit, SwiftUI, Composable, Material, React Native Component), DB(CoreData, Room, Hive, Isar, AsyncStorage, MMKV, Realm), 네트워크 라이브러리(Alamofire, Retrofit, Dio, Axios) 임포트 및 참조 오염 탐색
 * **의존성 방향 검증**: `Presentation` 계층에서 `Data` 계층 DTO 직참조 및 `Repository` 인터페이스의 올바른 계층 배치 확인
 * **점수화 리포트 & 클릭 가능한 코드 링크**: 100점 만점 건강도 평가 및 해당 라인 이동 링크 (`file:///path/to/file#L12`) 제공
 * **진단 & 자동 수정 지원**: 단순 점검 리포트 제공부터 사용자의 요청 시 AI 에이전트를 통한 **코드 자동 리팩토링**까지 지원
@@ -54,6 +54,7 @@ npx github:mrKangHo/clean-arch-checker -y
 | **iOS** (Swift) | Domain | `UIKit`, `SwiftUI`, `CoreData`, `Alamofire`, `Moya` 오염 여부 |
 | **Android** (Kotlin) | Domain | `android.*`, `androidx.*`, `Retrofit`, `Room` 오염 여부 |
 | **Flutter** (Dart) | Domain | `material.dart`, `widgets.dart`, `dio`, `isar`, `hive` 오염 여부 |
+| **React Native** (TypeScript/JS) | Domain | `react`, `react-native`, `@react-navigation/*`, `axios`, `async-storage`, `mmkv` 오염 여부 |
 | **공통** | Layer Isolation | Presentation <-> Data 직참조 여부, DTO/Entity Mapper 및 UseCase 사용 검증 |
 
 ---
@@ -65,13 +66,13 @@ npx github:mrKangHo/clean-arch-checker -y
 <a name="-english-guide"></a>
 ## 🇺🇸 English Guide
 
-**`clean-arch-checker`** is a skill package designed for AI Coding Agents (such as Claude Code, Antigravity, Cursor, Codex, OpenCode, Windsurf, etc.) to automatically audit iOS (Swift), Android (Kotlin), and Flutter (Dart) projects for compliance with **Clean Architecture** principles and the **Dependency Inversion Principle (DIP)**.
+**`clean-arch-checker`** is a skill package designed for AI Coding Agents (such as Claude Code, Antigravity, Cursor, Codex, OpenCode, Windsurf, etc.) to automatically audit iOS (Swift), Android (Kotlin), Flutter (Dart), and React Native (TypeScript/JS) projects for compliance with **Clean Architecture** principles and the **Dependency Inversion Principle (DIP)**.
 
 ### 🌟 Key Features
 * **Compatible with Major AI Coding Agents**: Works seamlessly with Claude Code, Antigravity, Cursor, Codex, OpenCode, and more.
 * **Interactive CLI Selection**: Interactive `npx` prompt allows you to choose target installation scope and target AI Agents.
-* **Automatic Platform Detection**: Auto-detects iOS (`.xcodeproj`, `Package.swift`), Android (`build.gradle`), and Flutter (`pubspec.yaml`).
-* **Domain Layer Isolation Check**: Scans for illegal imports in the `Domain` layer (e.g., UI frameworks like UIKit/SwiftUI/Material, DBs like Room/CoreData/Hive, or Network libs like Retrofit/Dio/Alamofire).
+* **Automatic Platform Detection**: Auto-detects iOS (`.xcodeproj`, `Package.swift`), Android (`build.gradle`), Flutter (`pubspec.yaml`), and React Native (`package.json`, `tsconfig.json`).
+* **Domain Layer Isolation Check**: Scans for illegal imports in the `Domain` layer (e.g., UI frameworks like UIKit/SwiftUI/Material/React Native, DBs like Room/CoreData/Hive/AsyncStorage/MMKV, or Network libs like Retrofit/Dio/Alamofire/Axios).
 * **Dependency Rule Validation**: Ensures `Presentation` layer does not directly depend on `Data` layer DTOs, and verifies `Repository` interfaces are defined inside `Domain`.
 * **Health Score & Clickable Links**: Provides a 100-point architecture health score and direct clickable file/line links (`file:///path/to/file#L12`).
 * **Audit & Auto-Refactoring Support**: Offers detailed diagnostic reports and can perform **automated code refactoring** upon user request.
@@ -119,7 +120,8 @@ clean-arch-checker/
         └── references/                        # Platform-specific rules
             ├── ios_clean_arch.md              # iOS audit rules (Swift/UIKit/SwiftUI)
             ├── android_clean_arch.md          # Android audit rules (Kotlin/Jetpack)
-            └── flutter_clean_arch.md          # Flutter audit rules (Dart/BLoC/Riverpod)
+            ├── flutter_clean_arch.md          # Flutter audit rules (Dart/BLoC/Riverpod)
+            └── react_native_clean_arch.md     # React Native audit rules (TypeScript/JS)
 ```
 
 ---
