@@ -3,21 +3,19 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const readline = require('readline');
 
-// Command line arguments parsing
 const args = process.argv.slice(2);
-const isWorkspace = args.includes('--workspace') || args.includes('-w');
-
 const homeDir = os.homedir();
 const cwd = process.cwd();
 
 const skillName = 'clean-arch-checker';
 const sourceDir = path.join(__dirname, '..', 'skills', skillName);
 
-console.log(`\n🚀 Universal AI Agent Skill Installer`);
-console.log(`----------------------------------------`);
-console.log(`Target Skill: ${skillName}`);
-console.log(`Install Mode: ${isWorkspace ? 'Workspace Project' : 'Global (User Home)'}`);
+// Flags for non-interactive / CI run
+const isYes = args.includes('-y') || args.includes('--yes') || args.includes('--all');
+const isWorkspaceFlag = args.includes('--workspace') || args.includes('-w');
+const isGlobalFlag = args.includes('--global') || args.includes('-g');
 
 function copyRecursiveSync(src, dest) {
   const exists = fs.existsSync(src);
@@ -39,62 +37,102 @@ function copyRecursiveSync(src, dest) {
   }
 }
 
-// Define target directories for various AI Agents (Antigravity, Claude Code, Cursor, etc.)
-let targetDirs = [];
-
-if (isWorkspace) {
-  targetDirs = [
-    path.join(cwd, '.agents', 'skills', skillName),    // Antigravity & Generic Agents
-    path.join(cwd, '.claude', 'skills', skillName),    // Claude Code
-    path.join(cwd, '.cursor', 'skills', skillName)     // Cursor
-  ];
-} else {
-  targetDirs = [
-    path.join(homeDir, '.gemini', 'config', 'skills', skillName), // Antigravity Global
-    path.join(homeDir, '.claude', 'skills', skillName),          // Claude Code Global
-    path.join(homeDir, '.cursor', 'skills', skillName)           // Cursor Global
-  ];
+function askQuestion(query) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  return new Promise((resolve) => rl.question(query, (ans) => {
+    rl.close();
+    resolve(ans.trim());
+  }));
 }
 
-try {
-  if (!fs.existsSync(sourceDir)) {
-    throw new Error(`Source skill directory not found at: ${sourceDir}`);
+async function main() {
+  console.log(`\n🛡️  Clean Architecture Checker Skill Installer`);
+  console.log(`=================================================`);
+
+  let isWorkspace = isWorkspaceFlag;
+  if (!isWorkspaceFlag && !isGlobalFlag && !isYes) {
+    console.log(`\n📌 [Step 1/2] Select Installation Scope:`);
+    console.log(`  1) Global    (All projects on your machine - Recommended)`);
+    console.log(`  2) Workspace (Current project repository only)`);
+    const scopeChoice = await askQuestion(`👉 Enter choice (1-2) [Default: 1]: `);
+    if (scopeChoice === '2') {
+      isWorkspace = true;
+    }
   }
 
+  let selectedAgents = ['all'];
+  if (!isYes) {
+    console.log(`\n🤖 [Step 2/2] Select AI Agent(s) to install for:`);
+    console.log(`  1) All AI Agents (Claude Code, Antigravity, Cursor) - Recommended`);
+    console.log(`  2) Claude Code   (~/.claude/skills/ or .claude/skills/)`);
+    console.log(`  3) Antigravity   (~/.gemini/config/skills/ or .agents/skills/)`);
+    console.log(`  4) Cursor        (~/.cursor/skills/ or .cursor/skills/)`);
+    const agentChoice = await askQuestion(`👉 Enter choice (1-4) [Default: 1]: `);
+    
+    if (agentChoice === '2') selectedAgents = ['claude'];
+    else if (agentChoice === '3') selectedAgents = ['antigravity'];
+    else if (agentChoice === '4') selectedAgents = ['cursor'];
+  }
+
+  console.log(`\n🚀 Installing ${skillName} skill...`);
+  console.log(`-------------------------------------------------`);
+
   const installedPaths = [];
-  targetDirs.forEach((targetDir) => {
+  const targets = [];
+  const installAll = selectedAgents.includes('all');
+
+  if (isWorkspace) {
+    if (installAll || selectedAgents.includes('antigravity')) {
+      targets.push({ name: 'Antigravity Workspace', path: path.join(cwd, '.agents', 'skills', skillName) });
+    }
+    if (installAll || selectedAgents.includes('claude')) {
+      targets.push({ name: 'Claude Code Workspace', path: path.join(cwd, '.claude', 'skills', skillName) });
+      
+      // Auto link in CLAUDE.md for Claude Code
+      const claudeMdPath = path.join(cwd, 'CLAUDE.md');
+      const skillRef = `\n\n## Clean Architecture Checker Skill\nSee instructions in [.claude/skills/clean-arch-checker/SKILL.md](.claude/skills/clean-arch-checker/SKILL.md)\n`;
+      if (!fs.existsSync(claudeMdPath)) {
+        fs.writeFileSync(claudeMdPath, `# Project Guidelines${skillRef}`);
+      } else {
+        const existing = fs.readFileSync(claudeMdPath, 'utf8');
+        if (!existing.includes('clean-arch-checker')) {
+          fs.appendFileSync(claudeMdPath, skillRef);
+        }
+      }
+    }
+    if (installAll || selectedAgents.includes('cursor')) {
+      targets.push({ name: 'Cursor Workspace', path: path.join(cwd, '.cursor', 'skills', skillName) });
+    }
+  } else {
+    if (installAll || selectedAgents.includes('antigravity')) {
+      targets.push({ name: 'Antigravity Global', path: path.join(homeDir, '.gemini', 'config', 'skills', skillName) });
+    }
+    if (installAll || selectedAgents.includes('claude')) {
+      targets.push({ name: 'Claude Code Global', path: path.join(homeDir, '.claude', 'skills', skillName) });
+    }
+    if (installAll || selectedAgents.includes('cursor')) {
+      targets.push({ name: 'Cursor Global', path: path.join(homeDir, '.cursor', 'skills', skillName) });
+    }
+  }
+
+  targets.forEach((t) => {
     try {
-      copyRecursiveSync(sourceDir, targetDir);
-      installedPaths.push(targetDir);
+      copyRecursiveSync(sourceDir, t.path);
+      console.log(` ✅ Installed for ${t.name.padEnd(22)} -> ${t.path}`);
+      installedPaths.push(t.path);
     } catch (err) {
-      // Ignore directory creation issues if any specific path fails
+      console.error(` ❌ Failed to install for ${t.name}:`, err.message);
     }
   });
 
-  // If workspace mode, also add reference in CLAUDE.md for Claude Code
-  if (isWorkspace) {
-    const claudeMdPath = path.join(cwd, 'CLAUDE.md');
-    const skillRef = `\n\n## Clean Architecture Checker Skill\nSee instructions in [.claude/skills/clean-arch-checker/SKILL.md](.claude/skills/clean-arch-checker/SKILL.md)\n`;
-    if (!fs.existsSync(claudeMdPath)) {
-      fs.writeFileSync(claudeMdPath, `# Project Guidelines${skillRef}`);
-    } else {
-      const existing = fs.readFileSync(claudeMdPath, 'utf8');
-      if (!existing.includes('clean-arch-checker')) {
-        fs.appendFileSync(claudeMdPath, skillRef);
-      }
-    }
-  }
-
-  console.log(`\n✅ Skill successfully installed for AI Agents!`);
-  installedPaths.forEach((p) => console.log(` 📍 Path: ${p}`));
-
-  console.log(`\n🎉 Installed for AI Agents:`);
-  console.log(`   - Antigravity (~/.gemini/config/skills/ or .agents/skills/)`);
-  console.log(`   - Claude Code (~/.claude/skills/ or .claude/skills/)`);
-  console.log(`   - Cursor (~/.cursor/skills/ or .cursor/skills/)`);
-  console.log(`\n👉 Next Steps: Ask your AI Agent: "Check if my project follows Clean Architecture principles"\n`);
-
-} catch (err) {
-  console.error(`\n❌ Failed to install skill:`, err.message);
-  process.exit(1);
+  console.log(`\n🎉 Skill installation successfully completed!`);
+  console.log(`👉 Open your AI Agent and ask: "Check if my project follows Clean Architecture principles"\n`);
 }
+
+main().catch((err) => {
+  console.error(`\n❌ Installation error:`, err.message);
+  process.exit(1);
+});
