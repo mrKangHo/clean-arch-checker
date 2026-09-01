@@ -1,0 +1,25 @@
+{
+  "name": "clean-arch-checker",
+  "version": "1.0.0",
+  "description": "Antigravity skill installer for Clean Architecture Checker (iOS, Android, Flutter)",
+  "main": "bin/install.js",
+  "bin": {
+    "clean-arch-checker": "bin/install.js"
+  },
+  "files": [
+    "bin",
+    "skills"
+  ],
+  "scripts": {
+    "test": "node bin/install.js"
+  },
+  "keywords": [
+    "antigravity",
+    "skill",
+    "clean-architecture",
+    "ios",
+    "android",
+    "flutter"
+  ],
+  "license": "MIT"
+}
