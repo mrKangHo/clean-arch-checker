@@ -1,7 +1,7 @@
 {
   "name": "clean-arch-checker",
   "version": "1.0.0",
-  "description": "Antigravity skill installer for Clean Architecture Checker (iOS, Android, Flutter)",
+  "description": "Universal AI Agent skill installer for Clean Architecture Checker (iOS, Android, Flutter)",
   "main": "bin/install.js",
   "bin": {
     "clean-arch-checker": "bin/install.js"
@@ -14,12 +14,16 @@
     "test": "node bin/install.js"
   },
   "keywords": [
-    "antigravity",
+    "ai-agent",
+    "agent-skill",
     "skill",
     "clean-architecture",
     "ios",
     "android",
-    "flutter"
+    "flutter",
+    "cursor",
+    "antigravity",
+    "claude-code"
   ],
   "license": "MIT"
 }

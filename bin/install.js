@@ -20,7 +20,7 @@ const skillName = 'clean-arch-checker';
 const targetDir = path.join(targetBaseDir, skillName);
 const sourceDir = path.join(__dirname, '..', 'skills', skillName);
 
-console.log(`\n🚀 Antigravity Skill Installer`);
+console.log(`\n🚀 AI Agent Skill Installer`);
 console.log(`----------------------------------------`);
 console.log(`Target Skill: ${skillName}`);
 console.log(`Install Mode: ${isWorkspace ? 'Workspace Project (.agents/skills/)' : 'Global (~/.gemini/config/skills/)'}`);
@@ -55,7 +55,7 @@ try {
   console.log(`\n✅ Skill successfully installed!`);
   console.log(`📍 Path: ${targetDir}\n`);
   console.log(`🎉 Next Steps:`);
-  console.log(`   Open Antigravity and ask: "Check if my project follows Clean Architecture principles"\n`);
+  console.log(`   Open your AI Coding Agent and ask: "Check if my project follows Clean Architecture principles"\n`);
 } catch (err) {
   console.error(`\n❌ Failed to install skill:`, err.message);
   process.exit(1);
