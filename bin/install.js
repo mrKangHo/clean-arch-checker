@@ -66,15 +66,19 @@ async function main() {
   let selectedAgents = ['all'];
   if (!isYes) {
     console.log(`\n🤖 [Step 2/2] Select AI Agent(s) to install for:`);
-    console.log(`  1) All AI Agents (Claude Code, Antigravity, Cursor) - Recommended`);
+    console.log(`  1) All AI Agents (Claude Code, Antigravity, Cursor, Codex, OpenCode) - Recommended`);
     console.log(`  2) Claude Code   (~/.claude/skills/ or .claude/skills/)`);
     console.log(`  3) Antigravity   (~/.gemini/config/skills/ or .agents/skills/)`);
     console.log(`  4) Cursor        (~/.cursor/skills/ or .cursor/skills/)`);
-    const agentChoice = await askQuestion(`👉 Enter choice (1-4) [Default: 1]: `);
+    console.log(`  5) Codex         (~/.codex/skills/ or .codex/skills/)`);
+    console.log(`  6) OpenCode      (~/.opencode/skills/ or .opencode/skills/)`);
+    const agentChoice = await askQuestion(`👉 Enter choice (1-6) [Default: 1]: `);
     
     if (agentChoice === '2') selectedAgents = ['claude'];
     else if (agentChoice === '3') selectedAgents = ['antigravity'];
     else if (agentChoice === '4') selectedAgents = ['cursor'];
+    else if (agentChoice === '5') selectedAgents = ['codex'];
+    else if (agentChoice === '6') selectedAgents = ['opencode'];
   }
 
   console.log(`\n🚀 Installing ${skillName} skill...`);
@@ -106,6 +110,12 @@ async function main() {
     if (installAll || selectedAgents.includes('cursor')) {
       targets.push({ name: 'Cursor Workspace', path: path.join(cwd, '.cursor', 'skills', skillName) });
     }
+    if (installAll || selectedAgents.includes('codex')) {
+      targets.push({ name: 'Codex Workspace', path: path.join(cwd, '.codex', 'skills', skillName) });
+    }
+    if (installAll || selectedAgents.includes('opencode')) {
+      targets.push({ name: 'OpenCode Workspace', path: path.join(cwd, '.opencode', 'skills', skillName) });
+    }
   } else {
     if (installAll || selectedAgents.includes('antigravity')) {
       targets.push({ name: 'Antigravity Global', path: path.join(homeDir, '.gemini', 'config', 'skills', skillName) });
@@ -115,6 +125,12 @@ async function main() {
     }
     if (installAll || selectedAgents.includes('cursor')) {
       targets.push({ name: 'Cursor Global', path: path.join(homeDir, '.cursor', 'skills', skillName) });
+    }
+    if (installAll || selectedAgents.includes('codex')) {
+      targets.push({ name: 'Codex Global', path: path.join(homeDir, '.codex', 'skills', skillName) });
+    }
+    if (installAll || selectedAgents.includes('opencode')) {
+      targets.push({ name: 'OpenCode Global', path: path.join(homeDir, '.opencode', 'skills', skillName) });
     }
   }
 
